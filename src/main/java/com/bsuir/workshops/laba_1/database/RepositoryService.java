@@ -26,19 +26,4 @@ public class RepositoryService {
         return results;
     }
 
-/*    public boolean contains(String inputNumber){
-        for(Result result : getAll()){
-            if(result.getInput().equals(inputNumber))
-                return true;
-        }
-        return false;
-    }
-
-    public Result get(String inputNumber){
-        for(Result result : getAll()){
-            if(result.getInput().equals(inputNumber))
-                return result;
-        }
-        return null;
-    }*/
 }

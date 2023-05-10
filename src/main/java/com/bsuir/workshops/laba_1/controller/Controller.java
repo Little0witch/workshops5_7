@@ -103,7 +103,7 @@ public class Controller{
     /**********************************************************************************************************/
 
 
-//lab 5
+//lab 5O
     @PostMapping("/bulkRandom")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BulkResult> postRandom(@RequestBody List<BulkParam> paramList){
@@ -114,7 +114,7 @@ public class Controller{
         paramList.forEach((currentElement)-> {
             Result result = new Result();
             result.setInput(currentElement.getInputString());
-            logger.info("2. validation");
+            logger.info("2. validation on bulk");
             result.setErrors(validator.validateInputNum(currentElement.getInputString()));
             if (!result.getErrors().getErrorList().isEmpty())
             {
