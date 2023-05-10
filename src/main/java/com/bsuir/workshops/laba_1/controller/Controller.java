@@ -103,7 +103,7 @@ public class Controller{
     /**********************************************************************************************************/
 
 
-//lab 5O
+//lab 5
     @PostMapping("/bulkRandom")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<BulkResult> postRandom(@RequestBody List<BulkParam> paramList){
