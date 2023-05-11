@@ -1,7 +1,6 @@
 package com.bsuir.workshops.laba_1.controller;
 
-import com.bsuir.workshops.laba_1.database.DbEntity;
-import com.bsuir.workshops.laba_1.database.RepositoryService;
+import com.bsuir.workshops.laba_1.database.MyRepository;
 import com.bsuir.workshops.laba_1.memory.InMemoryStorage;
 import com.bsuir.workshops.laba_1.entity.*;
 import com.bsuir.workshops.laba_1.service.CounterService;
@@ -18,6 +17,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+//import static jdk.internal.net.http.common.Log.errors;
+
 @RestController
 @RequestMapping("/api/lab1")
 public class Controller{
@@ -28,16 +29,16 @@ public class Controller{
 
     private CounterService counterService;
 
-    private RepositoryService repositoryService;
+    private MyRepository myRepository;
 
     @Autowired
     public Controller(GenerateService generateServiceRandomNum, Validator validator,
-                      InMemoryStorage inMemoryStorage, CounterService counterService, RepositoryService repositoryService) {
+                      InMemoryStorage inMemoryStorage, CounterService counterService, MyRepository myRepository) {
         this.generateServiceRandomNum = generateServiceRandomNum;
         this.validator = validator;
         this.inMemoryStorage = inMemoryStorage;
         this.counterService = counterService;
-        this.repositoryService = repositoryService;
+        this.myRepository = myRepository;
     }
     // лаба 7
 
@@ -64,7 +65,7 @@ public class Controller{
             valueRandom = generateServiceRandomNum.generateNum(value);
             result.setValueRandom(valueRandom);
             result.getErrors().setErrorMessage("OK");
-            repositoryService.save(result);
+            myRepository.save(result);
         }
         catch (RuntimeException exc)
         {
@@ -110,17 +111,14 @@ public class Controller{
 
         logger.info("1. bulk");
         List<ResultList> resultsList = new ArrayList<>();
+        List<String> errorList = new ArrayList<String>();
 
         paramList.forEach((currentElement)-> {
             Result result = new Result();
             result.setInput(currentElement.getInputString());
             logger.info("2. validation on bulk");
-            result.setErrors(validator.validateInputNum(currentElement.getInputString()));
-            if (!result.getErrors().getErrorList().isEmpty())
-            {
-                result.getErrors().setErrorMessage("BAD_REQUEST");
-            }
-            else
+            errorList.addAll(validator.validateInputNum(currentElement.getInputString()).getErrorList());
+            if (errorList.isEmpty())
             {
                 Integer tmp;
                 tmp = Integer.parseInt(currentElement.getInputString());
@@ -129,7 +127,7 @@ public class Controller{
                 tmpValueRandom = generateServiceRandomNum.generateNum(tmp);
                 result.setValueRandom(tmpValueRandom);
                 logger.info("4. Add memory");
-                repositoryService.save(result);
+                myRepository.save(result);
                 inMemoryStorage.addToMemoryStorage(result);
                 resultsList.add(new ResultList(result));
             }
@@ -138,7 +136,7 @@ public class Controller{
         double minInput = getMinMiddleValue(resultsList);
         double maxInput = getMaxMiddleValue(resultsList);
         double middleInput = getMiddleInput(resultsList);
-        return new ResponseEntity<>(new BulkResult(resultsList, minInput, maxInput, middleInput), HttpStatus.CREATED);
+        return new ResponseEntity<>(new BulkResult(resultsList, minInput, maxInput, middleInput, errorList), HttpStatus.CREATED);
     }
 
 
@@ -173,7 +171,7 @@ public class Controller{
     @GetMapping("/database")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<List<Result>> getDatabase(){
-        return new ResponseEntity<>(repositoryService.getAll(), HttpStatus.CREATED);
+        return new ResponseEntity<>(myRepository.getAll(), HttpStatus.CREATED);
     }
 
 }

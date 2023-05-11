@@ -1,6 +1,6 @@
 package com.bsuir.workshops.laba_1.controller;
 
-import com.bsuir.workshops.laba_1.database.RepositoryService;
+import com.bsuir.workshops.laba_1.database.MyRepository;
 import com.bsuir.workshops.laba_1.entity.*;
 import com.bsuir.workshops.laba_1.memory.InMemoryStorage;
 import com.bsuir.workshops.laba_1.service.CounterService;
@@ -34,10 +34,10 @@ public class ControllerTest {
     private CounterService counterService = mock(CounterService.class);
 
     @Mock
-    private RepositoryService repositoryService = mock(RepositoryService.class);
+    private MyRepository myRepository = mock(MyRepository.class);
 
     @InjectMocks
-    private Controller controller = new Controller(generateService, validator, inMemoryStorage, counterService, repositoryService);
+    private Controller controller = new Controller(generateService, validator, inMemoryStorage, counterService, myRepository);
 
     @Test
     public void testGoodResult(){
@@ -96,5 +96,7 @@ public class ControllerTest {
         MyInteger result = (MyInteger) response.getBody();
         assertEquals(new MyInteger(0), result);
     }
+
+
 
 }

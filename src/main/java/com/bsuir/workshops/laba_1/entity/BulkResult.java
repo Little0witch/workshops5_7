@@ -7,12 +7,15 @@ public class BulkResult {
     private double minMiddleValue;
     private double maxMiddleValue;
     private double middleMiddleValue;
+    private  List<String> errorList;
 
-    public BulkResult(List<ResultList> results, double minMiddleValue, double maxMiddleValue, double middleMiddleValue) {
+    public BulkResult(List<ResultList> results, double minMiddleValue, double maxMiddleValue,
+                      double middleMiddleValue, List<String> errorList) {
         this.results = results;
         this.minMiddleValue = minMiddleValue;
         this.maxMiddleValue = maxMiddleValue;
         this.middleMiddleValue = middleMiddleValue;
+        this.errorList = errorList;
     }
 
     public List<ResultList> getResults() {
@@ -45,5 +48,13 @@ public class BulkResult {
 
     public void setMiddleMiddleValue(double middleMiddleValue) {
         this.middleMiddleValue = middleMiddleValue;
+    }
+
+    public List<String> getErrorList() {
+        return errorList;
+    }
+
+    public void setErrorList(List<String> errorList) {
+        this.errorList = errorList;
     }
 }

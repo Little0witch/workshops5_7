@@ -8,11 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class RepositoryService {
+public class MyRepository {
     private Repository repository;
 
     @Autowired
-    public RepositoryService(Repository repository){
+    public MyRepository(Repository repository){
         this.repository = repository;
     }
 
