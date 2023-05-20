@@ -15,7 +15,8 @@ public class DbEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="sequence")
     private int Id;
 
-
+    @Column(name = "predefined_id")
+    private long predefinedId;
     @Column(name="input_number")
     private String inputNumber;
 
@@ -47,11 +48,26 @@ public class DbEntity {
         random5 = result.getValueRandom().getNum5();
     }
 
+    public DbEntity(long predId, Result result){
+        predefinedId = predId;
+        inputNumber = result.getInput();
+        random1 = result.getValueRandom().getNum1();
+        random2 = result.getValueRandom().getNum2();
+        random3 = result.getValueRandom().getNum3();
+        random4 = result.getValueRandom().getNum4();
+        random5 = result.getValueRandom().getNum5();
+    }
+
     public Result getResult(){
         ValueRandom values = new ValueRandom(random1, random2, random3, random4, random5);
         Result result = new Result();
         result.setInput(inputNumber);
         result.setValueRandom(values);
         return result;
+    }
+
+
+    public long getPredId() {
+        return predefinedId;
     }
 }

@@ -1,5 +1,6 @@
 package com.bsuir.workshops.laba_1.controller;
 
+import com.bsuir.workshops.laba_1.database.DbEntity;
 import com.bsuir.workshops.laba_1.database.MyRepository;
 import com.bsuir.workshops.laba_1.memory.InMemoryStorage;
 import com.bsuir.workshops.laba_1.entity.*;
@@ -16,8 +17,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
-//import static jdk.internal.net.http.common.Log.errors;
 
 @RestController
 @RequestMapping("/api/lab1")
@@ -127,7 +128,7 @@ public class Controller{
                 tmpValueRandom = generateServiceRandomNum.generateNum(tmp);
                 result.setValueRandom(tmpValueRandom);
                 logger.info("4. Add memory");
-                myRepository.save(result);
+                myRepository.save(myRepository.getLastId()+1,result);
                 inMemoryStorage.addToMemoryStorage(result);
                 resultsList.add(new ResultList(result));
             }
@@ -172,6 +173,41 @@ public class Controller{
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<List<Result>> getDatabase(){
         return new ResponseEntity<>(myRepository.getAll(), HttpStatus.CREATED);
+    }
+
+    @GetMapping("/asyncRandom")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Object> getAsyncId(String inputNum){
+
+        logger.info("1. Validation");
+        Result result = new Result();
+        result.setErrors(validator.validateInputNum(inputNum));
+        if (!result.getErrors().getErrorList().isEmpty())
+        {
+            return new ResponseEntity<>(result.getErrors(), HttpStatus.BAD_REQUEST);
+        }
+        logger.info("Генерация предварительного Id");
+        long lastId = myRepository.getLastId() + 1;
+        CompletableFuture.runAsync(new Runnable() {
+            @Override
+            public void run(){
+                logger.info("Запущена генерация random");
+                ValueRandom valueRandom = generateServiceRandomNum.generateNum(Integer.parseInt(inputNum));
+                result.setInput(inputNum);
+                result.setValueRandom(valueRandom);
+                logger.info("Сохранение в БД");
+                myRepository.save(lastId, result);
+            }
+        });
+        logger.info("Вывод предварительного id");
+        return new ResponseEntity<>(lastId, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/findByPredId")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<Result> findByPredId(long predId)
+    {
+        return new ResponseEntity<>(myRepository.findById(predId),HttpStatus.OK);
     }
 
 }

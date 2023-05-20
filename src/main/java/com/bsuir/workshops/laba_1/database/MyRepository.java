@@ -17,7 +17,11 @@ public class MyRepository {
     }
 
     public void save(Result result){
-        repository.save(new DbEntity(result));
+       repository.save(new DbEntity(result));
+    }
+
+    public void save(long pred_id, Result result){
+        repository.save(new DbEntity(pred_id, result));
     }
 
     public List<Result> getAll(){
@@ -25,5 +29,27 @@ public class MyRepository {
         repository.findAll().forEach(e -> results.add(e.getResult()));
         return results;
     }
+
+    public long getLastId()
+    {
+        return repository.count();
+//        if (repository.count() == 0)
+//        {
+//            return 0;
+//        }
+//        DbEntity ent = repository.findAll().get((int) (repository.count()-1));
+//        return ent.getId();
+    }
+
+    public Result findById(long predId)
+    {
+        for(DbEntity entity: repository.findAll())
+        {
+            if (entity.getPredId() == predId)
+                return entity.getResult();
+        }
+        return null;
+    }
+
 
 }
